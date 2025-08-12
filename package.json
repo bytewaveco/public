@@ -1,0 +1,33 @@
+{
+  "name": "@bytewaveco/public",
+  "version": "0.0.1",
+  "description": "An unofficial SDK for the Public.com API.",
+  "keywords": [
+    "public",
+    "api",
+    "sdk",
+    "trading",
+    "investing"
+  ],
+  "author": "Bytewave",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "unbuild",
+    "prepack": "unbuild"
+  },
+  "devDependencies": {
+    "unbuild": "^3.6.0"
+  }
+}
