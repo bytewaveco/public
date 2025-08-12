@@ -28,6 +28,7 @@ import {
   type PublicPlaceOrderOptions,
   type PublicPlaceOrderMultiLegOptions,
   placeOrderMultiLeg,
+  createOrderId,
 } from "./orderPlacement";
 export type {
   PublicGetAccountHistoryOptions,
@@ -66,7 +67,8 @@ export type PublicClient = {
      * Get an access token from the Public API. This is typically done automatically
      * when using a client.
      *
-     * @see https://public.com/api/docs/resources/authorization/create-personal-access-token
+     * https://public.com/api/docs/resources/authorization/create-personal-access-token
+     *
      * @param secret - The secret key for the Public API generated in your account
      * settings.
      * @param options - The options for the access token request.
@@ -79,7 +81,7 @@ export type PublicClient = {
     /**
      * List all accounts for the current user.
      *
-     * @see https://public.com/api/docs/resources/list-accounts/get-accounts
+     * https://public.com/api/docs/resources/list-accounts/get-accounts
      *
      * @returns The list of accounts.
      */
@@ -90,7 +92,7 @@ export type PublicClient = {
     /**
      * Get the account details for a given account.
      *
-     * @see https://public.com/api/docs/resources/account-details/get-account-portfolio-v2
+     * https://public.com/api/docs/resources/account-details/get-account-portfolio-v2
      *
      * @param accountId - The ID of the account to get the portfolio for.
      *
@@ -103,7 +105,7 @@ export type PublicClient = {
     /**
      * Get the account history for a given account.
      *
-     * @see https://public.com/api/docs/resources/account-details/get-history
+     * https://public.com/api/docs/resources/account-details/get-history
      *
      * @param accountId - The ID of the account to get the history for.
      * @param options - The options to use for the request.
@@ -122,7 +124,7 @@ export type PublicClient = {
     /**
      * Get all instruments.
      *
-     * @see https://public.com/api/docs/resources/instrument-details/get-all-instruments
+     * https://public.com/api/docs/resources/instrument-details/get-all-instruments
      *
      * @returns The instruments available on Public.
      */
@@ -133,7 +135,7 @@ export type PublicClient = {
     /**
      * Get the instrument details for a given symbol and type.
      *
-     * @see https://public.com/api/docs/resources/instrument-details/get-instrument-details
+     * https://public.com/api/docs/resources/instrument-details/get-instrument-details
      *
      * @param symbol - The symbol of the instrument to get the details for.
      * @param type - The type of the instrument to get the details for.
@@ -152,7 +154,7 @@ export type PublicClient = {
     /**
      * Get the quotes for given instruments.
      *
-     * @see https://public.com/api/docs/resources/market-data/get-quotes
+     * https://public.com/api/docs/resources/market-data/get-quotes
      *
      * @param accountId - The ID of the account to get the quotes for.
      * @param instruments - The instruments to get the quotes for.
@@ -169,9 +171,20 @@ export type PublicClient = {
   };
   orders: {
     /**
+     * Create a UUID conforming to RFC 4122 (standard 8-4-4-4-12 format, e.g.,
+     * 0d2abd8d-3625-4c83-a806-98abf35567cc), must be globally unique over time.
+     * This value serves as the deduplication key; if reused on the same account,
+     * the operation is idempotent. If the order is re-submitted due to a read
+     * timeout, do not modify any properties. If the original request succeeded,
+     * altering fields will have no effect.
+     *
+     * @returns A new order ID.
+     */
+    createOrderId: () => string;
+    /**
      * Place an order for a given account.
      *
-     * @see https://public.com/api/docs/resources/order-placement/place-order
+     * https://public.com/api/docs/resources/order-placement/place-order
      *
      * @param accountId - The ID of the account to place the order for.
      * @param options - The options for the order.
@@ -188,7 +201,7 @@ export type PublicClient = {
     /**
      * Place a multi leg order for a given account.
      *
-     * @see https://public.com/api/docs/resources/order-placement/place-order-multileg
+     * https://public.com/api/docs/resources/order-placement/place-order-multileg
      *
      * @param accountId - The ID of the account to place the order for.
      * @param options - The options for the order.
@@ -205,7 +218,7 @@ export type PublicClient = {
     /**
      * Get the order details for a given order.
      *
-     * @see https://public.com/api/docs/resources/order-placement/get-order
+     * https://public.com/api/docs/resources/order-placement/get-order
      *
      * @param accountId - The ID of the account to get the order for.
      * @param orderId - The ID of the order to get the details for.
@@ -222,7 +235,7 @@ export type PublicClient = {
     /**
      * Cancel an order for a given account.
      *
-     * @see https://public.com/api/docs/resources/order-placement/cancel-order
+     * https://public.com/api/docs/resources/order-placement/cancel-order
      *
      * @param accountId - The ID of the account to cancel the order for.
      * @param orderId - The ID of the order to cancel.
@@ -237,7 +250,7 @@ export type PublicClient = {
     /**
      * Preflight a single leg order.
      *
-     * @see https://public.com/api/docs/resources/order-placement/preflight-single-leg
+     * https://public.com/api/docs/resources/order-placement/preflight-single-leg
      *
      * @param accountId - The ID of the account to preflight the order for.
      * @param options - The options for the preflight.
@@ -254,7 +267,7 @@ export type PublicClient = {
     /**
      * Preflight a multi leg order.
      *
-     * @see https://public.com/api/docs/resources/order-placement/preflight-multi-leg
+     * https://public.com/api/docs/resources/order-placement/preflight-multi-leg
      *
      * @param accountId - The ID of the account to preflight the order for.
      * @param options - The options for the preflight.
@@ -273,7 +286,7 @@ export type PublicClient = {
     /**
      * Get the option greeks for a given option symbol.
      *
-     * @see https://public.com/api/docs/resources/option-details/get-option-greeks
+     * https://public.com/api/docs/resources/option-details/get-option-greeks
      *
      * @param accountId - The ID of the account to get the option greeks for.
      * @param osiOptionSymbol - The option symbol to get the greeks for.
@@ -290,7 +303,7 @@ export type PublicClient = {
     /**
      * Get the option expirations for a given instrument.
      *
-     * @see https://public.com/api/docs/resources/market-data/get-option-expirations
+     * https://public.com/api/docs/resources/market-data/get-option-expirations
      *
      * @param accountId - The ID of the account to get the option expirations for.
      * @param instrument - The instrument to get the option expirations for.
@@ -307,7 +320,7 @@ export type PublicClient = {
     /**
      * Get the option chain for a given instrument and expiration date.
      *
-     * @see https://public.com/api/docs/resources/market-data/get-option-chain
+     * https://public.com/api/docs/resources/market-data/get-option-chain
      *
      * @param accountId - The ID of the account to get the option chain for.
      * @param instrument - The instrument to get the option chain for.
@@ -326,7 +339,7 @@ export type PublicClient = {
   };
 };
 
-const PUBLIC_API_URL = "https://api.public.com" as const;
+const PUBLIC_API_URL = "https://api.public.com/userapiauthservice" as const;
 
 /**
  * Create a new Public client.
@@ -351,19 +364,16 @@ export function createClient(
       return;
     }
 
-    const response = await fetch(
-      `${PUBLIC_API_URL}/userapiauthservice/personal/access-tokens`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          validityInMinutes,
-          secret,
-        }),
-      }
-    );
+    const response = await fetch(`${PUBLIC_API_URL}/personal/access-tokens`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        validityInMinutes,
+        secret,
+      }),
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to get session (${response.status})`);
@@ -402,10 +412,9 @@ export function createClient(
       return result;
     }
 
-    const response = await fetch(`${PUBLIC_API_URL}/userapigateway${url}`, {
+    const response = await fetch(`${PUBLIC_API_URL}${url}`, {
       ...options,
       headers: {
-        ...(options?.headers ?? {}),
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
       },
@@ -445,6 +454,7 @@ export function createClient(
         getQuotes(_fetch, accountId, instruments),
     },
     orders: {
+      createOrderId,
       placeOrder: (accountId: string, options: PublicPlaceOrderOptions) =>
         placeOrder(_fetch, accountId, options),
       placeOrderMultiLeg: (

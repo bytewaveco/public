@@ -1,6 +1,6 @@
 {
   "name": "@bytewaveco/public",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An unofficial SDK for the Public.com API.",
   "keywords": [
     "public",
@@ -29,5 +29,8 @@
   },
   "devDependencies": {
     "unbuild": "^3.6.0"
+  },
+  "dependencies": {
+    "uuid": "^11.1.0"
   }
 }

@@ -10,17 +10,40 @@ export type PublicInstrumentType =
   | "BOND"
   | "INDEX";
 
+/**
+ * https://public.com/api/docs/resources/instrument-details/get-instrument
+ */
 export type PublicInstrument = {
   symbol: string;
   type: PublicInstrumentType;
 };
 
+/**
+ * https://public.com/api/docs/resources/instrument-details/get-all-instruments
+ */
 export type PublicGetInstrumentsOptions = {
+  /**
+   * Optional set of security types to filter by ([GatewaySecurityType])
+   */
   typeFilter?: PublicInstrumentType[];
-  // TODO: add types
+  /**
+   * Optional set of trading statuses to filter by ([ApiInstrumentDto.Trading])
+   */
   tradingFilter?: any[];
+  /**
+   * Optional set of fractional trading statuses to filter by
+   * ([ApiInstrumentDto.Trading])
+   */
   fractionalTradingFilter?: any[];
+  /**
+   * Optional set of option trading statuses to filter by
+   * ([ApiInstrumentDto.Trading])
+   */
   optionTradingFilter?: any[];
+  /**
+   * Optional set of option spread trading statuses to filter by
+   * ([ApiInstrumentDto.Trading])
+   */
   optionSpreadTradingFilter?: any[];
 };
 
