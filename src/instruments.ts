@@ -47,30 +47,53 @@ export type PublicGetInstrumentsOptions = {
   optionSpreadTradingFilter?: any[];
 };
 
-export function getInstruments(
-  fetch: PublicClientFetch,
-  options: PublicGetInstrumentsOptions = {}
-) {
-  const params = new URLSearchParams();
+export class InstrumentsApi {
+  constructor(private readonly fetch: PublicClientFetch) {}
 
-  for (const [key, value] of Object.entries(options)) {
-    if (value !== undefined) {
-      params.set(key, value.toString());
+  /**
+   * Get all instruments.
+   *
+   * https://public.com/api/docs/resources/instrument-details/get-all-instruments
+   *
+   * @returns The instruments available on Public.
+   */
+  async getInstruments(
+    options: PublicGetInstrumentsOptions = {}
+  ): Promise<{
+    data: { instruments: any[] } | null;
+    error: Error | null;
+  }> {
+    const params = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(options)) {
+      if (value !== undefined) {
+        params.set(key, value.toString());
+      }
     }
+
+    const stringParams = params.toString();
+    return this.fetch(
+      `/trading/instruments${stringParams.length > 0 ? `?${stringParams}` : ""}`
+    );
   }
 
-  const stringParams = params.toString();
-  return fetch<{
-    instruments: any[];
-  }>(
-    `/trading/instruments${stringParams.length > 0 ? `?${stringParams}` : ""}`
-  );
-}
-
-export function getInstrument(
-  fetch: PublicClientFetch,
-  symbol: string,
-  type: PublicInstrumentType
-) {
-  return fetch<any>(`/trading/instruments/${symbol}/${type}`);
+  /**
+   * Get the instrument details for a given symbol and type.
+   *
+   * https://public.com/api/docs/resources/instrument-details/get-instrument-details
+   *
+   * @param symbol - The symbol of the instrument to get the details for.
+   * @param type - The type of the instrument to get the details for.
+   *
+   * @returns The instrument details for the given symbol and type.
+   */
+  async getInstrument(
+    symbol: string,
+    type: PublicInstrumentType
+  ): Promise<{
+    data: any | null;
+    error: Error | null;
+  }> {
+    return this.fetch(`/trading/instruments/${symbol}/${type}`);
+  }
 }

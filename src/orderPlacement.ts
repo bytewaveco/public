@@ -217,68 +217,149 @@ export type PublicPreflightMultiLegOptions = {
   }[];
 };
 
-export function placeOrder(
-  fetch: PublicClientFetch,
-  accountId: string,
-  options: PublicPlaceOrderOptions
-) {
-  return fetch<any>(`/trading/${accountId}/order`, {
-    method: "POST",
-    body: JSON.stringify(options),
-  });
-}
+export class OrderPlacementApi {
+  constructor(private readonly fetch: PublicClientFetch) {}
 
-export function placeOrderMultiLeg(
-  fetch: PublicClientFetch,
-  accountId: string,
-  options: PublicPlaceOrderMultiLegOptions
-) {
-  return fetch<any>(`/trading/${accountId}/order/multileg`, {
-    method: "POST",
-    body: JSON.stringify(options),
-  });
-}
+  /**
+   * Create a UUID conforming to RFC 4122 (standard 8-4-4-4-12 format, e.g.,
+   * 0d2abd8d-3625-4c83-a806-98abf35567cc), must be globally unique over time.
+   * This value serves as the deduplication key; if reused on the same account,
+   * the operation is idempotent. If the order is re-submitted due to a read
+   * timeout, do not modify any properties. If the original request succeeded,
+   * altering fields will have no effect.
+   *
+   * @returns A new order ID.
+   */
+  createOrderId() {
+    return v4();
+  }
 
-export function getOrder(
-  fetch: PublicClientFetch,
-  accountId: string,
-  orderId: string
-) {
-  return fetch<any>(`/trading/${accountId}/order/${orderId}`);
-}
+  /**
+   * Place an order for a given account.
+   *
+   * https://public.com/api/docs/resources/order-placement/place-order
+   *
+   * @param accountId - The ID of the account to place the order for.
+   * @param options - The options for the order.
+   *
+   * @returns The order details for the given order.
+   */
+  async placeOrder(
+    accountId: string,
+    options: PublicPlaceOrderOptions
+  ): Promise<{
+    data: any | null;
+    error: Error | null;
+  }> {
+    return this.fetch(`/trading/${accountId}/order`, {
+      method: "POST",
+      body: JSON.stringify(options),
+    });
+  }
 
-export function cancelOrder(
-  fetch: PublicClientFetch,
-  accountId: string,
-  orderId: string
-) {
-  return fetch<any>(`/trading/${accountId}/order/${orderId}`, {
-    method: "DELETE",
-  });
-}
+  /**
+   * Place a multi leg order for a given account.
+   *
+   * https://public.com/api/docs/resources/order-placement/place-order-multileg
+   *
+   * @param accountId - The ID of the account to place the order for.
+   * @param options - The options for the order.
+   *
+   * @returns The order details for the given order.
+   */
+  async placeOrderMultiLeg(
+    accountId: string,
+    options: PublicPlaceOrderMultiLegOptions
+  ): Promise<{
+    data: any | null;
+    error: Error | null;
+  }> {
+    return this.fetch(`/trading/${accountId}/order/multileg`, {
+      method: "POST",
+      body: JSON.stringify(options),
+    });
+  }
 
-export function preflightSingleLeg(
-  fetch: PublicClientFetch,
-  accountId: string,
-  options: PublicPreflightSingleLegOptions
-) {
-  return fetch<any>(`/trading/${accountId}/preflight/single-leg`, {
-    method: "POST",
-    body: JSON.stringify(options),
-  });
-}
+  /**
+   * Preflight a single leg order.
+   *
+   * https://public.com/api/docs/resources/order-placement/preflight-single-leg
+   *
+   * @param accountId - The ID of the account to preflight the order for.
+   * @param options - The options for the preflight.
+   *
+   * @returns The preflight result.
+   */
+  async preflightSingleLeg(
+    accountId: string,
+    options: PublicPreflightSingleLegOptions
+  ): Promise<{
+    data: any | null;
+    error: Error | null;
+  }> {
+    return this.fetch(`/trading/${accountId}/preflight/single-leg`, {
+      method: "POST",
+      body: JSON.stringify(options),
+    });
+  }
 
-export function preflightMultiLeg(
-  fetch: PublicClientFetch,
-  accountId: string,
-  options: PublicPreflightMultiLegOptions
-) {
-  return fetch<any>(`/trading/${accountId}/preflight/multi-leg`, {
-    method: "POST",
-    body: JSON.stringify(options),
-  });
-}
+  /**
+   * Preflight a multi leg order.
+   *
+   * https://public.com/api/docs/resources/order-placement/preflight-multi-leg
+   *
+   * @param accountId - The ID of the account to preflight the order for.
+   * @param options - The options for the preflight.
+   *
+   * @returns The preflight result.
+   */
+  async preflightMultiLeg(
+    accountId: string,
+    options: PublicPreflightMultiLegOptions
+  ): Promise<{
+    data: any | null;
+    error: Error | null;
+  }> {
+    return this.fetch(`/trading/${accountId}/preflight/multi-leg`, {
+      method: "POST",
+      body: JSON.stringify(options),
+    });
+  }
 
-export function createOrderId() {
-  return v4();
+  /**
+   * Get the order details for a given order.
+   *
+   * https://public.com/api/docs/resources/order-placement/get-order
+   *
+   * @param accountId - The ID of the account to get the order for.
+   * @param orderId - The ID of the order to get the details for.
+   *
+   * @returns The order details for the given order.
+   */
+  async getOrder(accountId: string, orderId: string): Promise<{
+    data: any | null;
+    error: Error | null;
+  }> {
+    return this.fetch(`/trading/${accountId}/order/${orderId}`);
+  }
+
+  /**
+   * Cancel an order for a given account.
+   *
+   * https://public.com/api/docs/resources/order-placement/cancel-order
+   *
+   * @param accountId - The ID of the account to cancel the order for.
+   * @param orderId - The ID of the order to cancel.
+   */
+  async cancelOrder(
+    accountId: string,
+    orderId: string
+  ): Promise<{
+    data: any | null;
+    error: Error | null;
+  }> {
+    return this.fetch(`/trading/${accountId}/order/${orderId}`, {
+      method: "DELETE",
+    });
+  }
 }

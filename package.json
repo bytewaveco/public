@@ -1,7 +1,7 @@
 {
   "name": "@bytewaveco/public",
-  "version": "0.0.2",
-  "description": "An unofficial SDK for the Public.com API.",
+  "version": "0.0.3",
+  "description": "A TypeScript compatible library for interacting with the Public API.",
   "keywords": [
     "public",
     "api",
