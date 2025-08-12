@@ -1,7 +1,8 @@
-import type { PublicClientFetch } from ".";
-import type { PublicInstrument } from "./instruments";
+import type { PublicClientFetch } from '.'
+import type { PublicInstrument } from './instruments'
 
 export class OptionsApi {
+  /* eslint-disable-next-line no-unused-vars */
   constructor(private readonly fetch: PublicClientFetch) {}
 
   /**
@@ -16,14 +17,13 @@ export class OptionsApi {
    */
   async getOptionGreeks(
     accountId: string,
-    osiOptionSymbol: string
+    osiOptionSymbol: string,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
-    return this.fetch(
-      `/option-details/${accountId}/${osiOptionSymbol}/greeks`
-    );
+    return this.fetch(`/option-details/${accountId}/${osiOptionSymbol}/greeks`)
   }
 
   /**
@@ -38,17 +38,18 @@ export class OptionsApi {
    */
   async getOptionExpirations(
     accountId: string,
-    instrument: PublicInstrument
+    instrument: PublicInstrument,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
     return this.fetch(`/marketdata/${accountId}/option-expirations`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({
         instrument,
       }),
-    });
+    })
   }
 
   /**
@@ -65,17 +66,18 @@ export class OptionsApi {
   async getOptionChain(
     accountId: string,
     instrument: PublicInstrument,
-    expirationDate: string
+    expirationDate: string,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
     return this.fetch(`/marketdata/${accountId}/option-chain`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({
         instrument,
         expirationDate,
       }),
-    });
+    })
   }
 }

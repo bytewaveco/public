@@ -1,13 +1,13 @@
-import type { PublicClientFetch, PublicInstrument } from ".";
-import { v4 } from "uuid";
+import type { PublicClientFetch, PublicInstrument } from '.'
+import { v4 } from 'uuid'
 
-export type PublicOrderSide = "BUY" | "SELL";
+export type PublicOrderSide = 'BUY' | 'SELL'
 
-export type PublicOrderType = "MARKET" | "LIMIT" | "STOP" | "STOP_LIMIT";
+export type PublicOrderType = 'MARKET' | 'LIMIT' | 'STOP' | 'STOP_LIMIT'
 
-export type PublicOpenCloseIndicator = "OPEN" | "CLOSE";
+export type PublicOpenCloseIndicator = 'OPEN' | 'CLOSE'
 
-export type PublicTimeInForce = "DAY" | "GTD";
+export type PublicTimeInForce = 'DAY' | 'GTD'
 
 /**
  * https://public.com/api/docs/resources/order-placement/preflight-single-leg
@@ -21,50 +21,50 @@ export type PublicPlaceOrderOptions = {
    * read timeout, do not modify any properties. If the original request
    * succeeded, altering fields will have no effect.
    */
-  orderId: string;
-  instrument: PublicInstrument;
+  orderId: string
+  instrument: PublicInstrument
   /**
    * The Order Side BUY/SELL. For Options also include the openCloseIndicator
    */
-  orderSide: PublicOrderSide;
+  orderSide: PublicOrderSide
   /**
    * The Type of order
    */
-  orderType: PublicOrderType;
+  orderType: PublicOrderType
   expiration: {
     /**
      * The time in for the order
      */
-    timeInForce: PublicTimeInForce;
+    timeInForce: PublicTimeInForce
     /**
      * The expiration date. Only used when timeInForce is GTD, cannot be more
      * than 90 days in the future
      */
-    expirationTime: string;
-  };
+    expirationTime: string
+  }
   /**
    * The order quantity. Used when buying/selling whole shares and when selling
    * fractional. Mutually exclusive with `amount`
    */
-  quantity?: string;
+  quantity?: string
   /**
    * The order amount. Used when buying/selling shares for a specific notional
    * value
    */
-  amount?: string;
+  amount?: string
   /**
    * The limit price. Used when orderType = LIMIT or orderType = STOP_LIMIT
    */
-  limitPrice?: string;
+  limitPrice?: string
   /**
    * The stop price. Used when orderType = STOP or orderType = STOP_LIMIT
    */
-  stopPrice?: string;
+  stopPrice?: string
   /**
    * Used for options only. Indicates if this is BUY to OPEN/CLOSE
    */
-  openCloseIndicator?: PublicOpenCloseIndicator;
-};
+  openCloseIndicator?: PublicOpenCloseIndicator
+}
 
 /**
  * https://public.com/api/docs/resources/order-placement/place-multileg-order
@@ -78,97 +78,97 @@ export type PublicPlaceOrderMultiLegOptions = {
    * read timeout, do not modify any properties. If the original request
    * succeeded, altering fields will have no effect.
    */
-  orderId: string;
+  orderId: string
   /**
    * The order quantity
    */
-  quantity: string;
+  quantity: string
   /**
    * The order type. Only LIMIT order are allowed
    */
-  type: "LIMIT";
+  type: 'LIMIT'
   /**
    * The limit price for the order. For debit spreads the limit price must be
    * positive, for create spreads the limit price is negative
    */
-  limitPrice: string;
+  limitPrice: string
   expiration: {
     /**
      * The time in for the order
      */
-    timeInForce: PublicTimeInForce;
+    timeInForce: PublicTimeInForce
     /**
      * The expiration date. Only used when timeInForce is GTD, cannot be more
      * than 90 days in the future
      */
-    expirationTime: string;
-  };
+    expirationTime: string
+  }
   /**
    * From 2-6 legs. There can be at most 1 equity leg
    */
   legs: {
-    instrument: PublicInstrument;
-    side: PublicOrderSide;
+    instrument: PublicInstrument
+    side: PublicOrderSide
     /**
      * Required when instrument.type = OPTION, used to determine if the leg is
      * buy-to-open or buy-to-close
      */
-    openCloseIndicator?: PublicOpenCloseIndicator;
+    openCloseIndicator?: PublicOpenCloseIndicator
     /**
      * The ratio between legs. Equity legs will typically be 100 shares, and
      * option legs 1 contract
      */
-    ratioQuantity?: number;
-  }[];
-};
+    ratioQuantity?: number
+  }[]
+}
 
 /**
  * https://public.com/api/docs/resources/order-placement/preflight-single-leg
  */
 export type PublicPreflightSingleLegOptions = {
-  instrument: PublicInstrument;
+  instrument: PublicInstrument
   /**
    * The Order Side BUY/SELL. For Options also include the openCloseIndicator
    */
-  orderSide: PublicOrderSide;
+  orderSide: PublicOrderSide
   /**
    * The Type of order
    */
-  orderType: PublicOrderType;
+  orderType: PublicOrderType
   expiration: {
     /**
      * The time in for the order
      */
-    timeInForce: PublicTimeInForce;
+    timeInForce: PublicTimeInForce
     /**
      * The expiration date. Only used when timeInForce is GTD, cannot be more
      * than 90 days in the future
      */
-    expirationTime: string;
-  };
+    expirationTime: string
+  }
   /**
    * The order quantity. Used when buying/selling whole shares and when selling
    * fractional. Mutually exclusive with `amount`
    */
-  quantity?: string;
+  quantity?: string
   /**
    * The order amount. Used when buying/selling shares for a specific notional
    * value
    */
-  amount?: string;
+  amount?: string
   /**
    * The limit price. Used when orderType = LIMIT or orderType = STOP_LIMIT
    */
-  limitPrice?: string;
+  limitPrice?: string
   /**
    * The stop price. Used when orderType = STOP or orderType = STOP_LIMIT
    */
-  stopPrice?: string;
+  stopPrice?: string
   /**
    * Used for options only. Indicates if this is BUY to OPEN/CLOSE
    */
-  openCloseIndicator?: PublicOpenCloseIndicator;
-};
+  openCloseIndicator?: PublicOpenCloseIndicator
+}
 
 /**
  * https://public.com/api/docs/resources/order-placement/preflight-multi-leg
@@ -177,47 +177,48 @@ export type PublicPreflightMultiLegOptions = {
   /**
    * The Type of order
    */
-  orderType: PublicOrderType;
+  orderType: PublicOrderType
   expiration: {
     /**
      * The time in for the order
      */
-    timeInForce: PublicTimeInForce;
+    timeInForce: PublicTimeInForce
     /**
      * The expiration date. Only used when timeInForce is GTD, cannot be more
      * than 90 days in the future
      */
-    expirationTime: string;
-  };
+    expirationTime: string
+  }
   /**
    * The order quantity
    */
-  quantity?: string;
+  quantity?: string
   /**
    * The limit price for the order. For debit spreads the limit price must be
    * positive, for create spreads the limit price is negative
    */
-  limitPrice: string;
+  limitPrice: string
   /**
    * From 2-6 legs. There can be at most 1 equity leg
    */
   legs: {
-    instrument: PublicInstrument;
-    side: PublicOrderSide;
+    instrument: PublicInstrument
+    side: PublicOrderSide
     /**
      * Required when instrument.type = OPTION, used to determine if the leg is
      * buy-to-open or buy-to-close
      */
-    openCloseIndicator?: PublicOpenCloseIndicator;
+    openCloseIndicator?: PublicOpenCloseIndicator
     /**
      * The ratio between legs. Equity legs will typically be 100 shares, and
      * option legs 1 contract
      */
-    ratioQuantity?: number;
-  }[];
-};
+    ratioQuantity?: number
+  }[]
+}
 
 export class OrderPlacementApi {
+  /* eslint-disable-next-line no-unused-vars */
   constructor(private readonly fetch: PublicClientFetch) {}
 
   /**
@@ -231,7 +232,7 @@ export class OrderPlacementApi {
    * @returns A new order ID.
    */
   createOrderId() {
-    return v4();
+    return v4()
   }
 
   /**
@@ -246,15 +247,16 @@ export class OrderPlacementApi {
    */
   async placeOrder(
     accountId: string,
-    options: PublicPlaceOrderOptions
+    options: PublicPlaceOrderOptions,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
     return this.fetch(`/trading/${accountId}/order`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(options),
-    });
+    })
   }
 
   /**
@@ -269,15 +271,16 @@ export class OrderPlacementApi {
    */
   async placeOrderMultiLeg(
     accountId: string,
-    options: PublicPlaceOrderMultiLegOptions
+    options: PublicPlaceOrderMultiLegOptions,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
     return this.fetch(`/trading/${accountId}/order/multileg`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(options),
-    });
+    })
   }
 
   /**
@@ -292,15 +295,16 @@ export class OrderPlacementApi {
    */
   async preflightSingleLeg(
     accountId: string,
-    options: PublicPreflightSingleLegOptions
+    options: PublicPreflightSingleLegOptions,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
     return this.fetch(`/trading/${accountId}/preflight/single-leg`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(options),
-    });
+    })
   }
 
   /**
@@ -315,15 +319,16 @@ export class OrderPlacementApi {
    */
   async preflightMultiLeg(
     accountId: string,
-    options: PublicPreflightMultiLegOptions
+    options: PublicPreflightMultiLegOptions,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
     return this.fetch(`/trading/${accountId}/preflight/multi-leg`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(options),
-    });
+    })
   }
 
   /**
@@ -336,11 +341,15 @@ export class OrderPlacementApi {
    *
    * @returns The order details for the given order.
    */
-  async getOrder(accountId: string, orderId: string): Promise<{
-    data: any | null;
-    error: Error | null;
+  async getOrder(
+    accountId: string,
+    orderId: string,
+  ): Promise<{
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
-    return this.fetch(`/trading/${accountId}/order/${orderId}`);
+    return this.fetch(`/trading/${accountId}/order/${orderId}`)
   }
 
   /**
@@ -353,13 +362,14 @@ export class OrderPlacementApi {
    */
   async cancelOrder(
     accountId: string,
-    orderId: string
+    orderId: string,
   ): Promise<{
-    data: any | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: any | null
+    error: Error | null
   }> {
     return this.fetch(`/trading/${accountId}/order/${orderId}`, {
-      method: "DELETE",
-    });
+      method: 'DELETE',
+    })
   }
 }

@@ -1,7 +1,8 @@
-import type { PublicClientFetch } from ".";
-import type { PublicInstrument } from "./instruments";
+import type { PublicClientFetch } from '.'
+import type { PublicInstrument } from './instruments'
 
 export class MarketDataApi {
+  /* eslint-disable-next-line no-unused-vars */
   constructor(private readonly fetch: PublicClientFetch) {}
 
   /**
@@ -16,16 +17,17 @@ export class MarketDataApi {
    */
   async getQuotes(
     accountId: string,
-    instruments: PublicInstrument[]
+    instruments: PublicInstrument[],
   ): Promise<{
-    data: { quotes: any[] } | null;
-    error: Error | null;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    data: { quotes: any[] } | null
+    error: Error | null
   }> {
     return this.fetch(`/marketdata/${accountId}/quotes`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({
         instruments,
       }),
-    });
+    })
   }
 }
