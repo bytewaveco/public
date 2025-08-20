@@ -1,29 +1,13 @@
-import { AccountsApi, type PublicGetAccountHistoryOptions } from './accounts'
-import {
-  type PublicInstrumentType,
-  type PublicGetInstrumentsOptions,
-  type PublicInstrument,
-  InstrumentsApi,
-} from './instruments'
+import { AccountsApi } from './accounts'
+import { InstrumentsApi } from './instruments'
 import { MarketDataApi } from './marketData'
 import { OptionsApi } from './options'
-import {
-  type PublicPreflightMultiLegOptions,
-  type PublicPreflightSingleLegOptions,
-  type PublicPlaceOrderOptions,
-  type PublicPlaceOrderMultiLegOptions,
-  OrderPlacementApi,
-} from './orderPlacement'
-export type {
-  PublicGetAccountHistoryOptions,
-  PublicInstrumentType,
-  PublicInstrument,
-  PublicGetInstrumentsOptions,
-  PublicPlaceOrderOptions,
-  PublicPreflightMultiLegOptions,
-  PublicPreflightSingleLegOptions,
-  PublicPlaceOrderMultiLegOptions,
-}
+import { OrderPlacementApi } from './orderPlacement'
+export type * from './accounts'
+export type * from './instruments'
+export type * from './marketData'
+export type * from './options'
+export type * from './orderPlacement'
 
 export type PublicGetAccessTokenOptions = {
   validityInMinutes: number
@@ -73,11 +57,11 @@ async function getSession(
       },
     )
 
-    if (!response.ok) {
-      throw new Error(`Failed to get session (${response.status})`)
-    }
-
     const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message)
+    }
 
     sessionCache.set(secret, {
       accessToken: data.accessToken,
@@ -118,22 +102,25 @@ export function createClient(
       return result
     }
 
-    const response = await fetch(`${PUBLIC_API_URL}/userapigateway${url}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    })
+    try {
+      const response = await fetch(`${PUBLIC_API_URL}/userapigateway${url}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      })
 
-    if (!response.ok) {
-      result.error = new Error(`Failed to fetch ${url} (${response.status})`)
-      return result
+      const data = await response.json()
+
+      if (response.ok) {
+        result.data = data as T
+      } else {
+        result.error = new Error(JSON.stringify(data))
+      }
+    } catch (error) {
+      result.error = error
     }
-
-    const data = await response.json()
-
-    result.data = data as T
 
     return result
   }

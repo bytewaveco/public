@@ -15,15 +15,15 @@ export class OptionsApi {
    *
    * @returns The option greeks for the given option symbol.
    */
-  async getOptionGreeks(
-    accountId: string,
-    osiOptionSymbol: string,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/option-details/${accountId}/${osiOptionSymbol}/greeks`)
+  async getOptionGreeks(accountId: string, osiOptionSymbol: string) {
+    return this.fetch<{
+      delta: string
+      gamma: string
+      theta: string
+      vega: string
+      rho: string
+      impliedVolatility: string
+    }>(`/option-details/${accountId}/${osiOptionSymbol}/greeks`)
   }
 
   /**
@@ -36,15 +36,11 @@ export class OptionsApi {
    *
    * @returns The option expirations for the given instrument.
    */
-  async getOptionExpirations(
-    accountId: string,
-    instrument: PublicInstrument,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/marketdata/${accountId}/option-expirations`, {
+  async getOptionExpirations(accountId: string, instrument: PublicInstrument) {
+    return this.fetch<{
+      baseSymbol: string
+      expirations: string[]
+    }>(`/marketdata/${accountId}/option-expirations`, {
       method: 'POST',
       body: JSON.stringify({
         instrument,
@@ -67,12 +63,38 @@ export class OptionsApi {
     accountId: string,
     instrument: PublicInstrument,
     expirationDate: string,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/marketdata/${accountId}/option-chain`, {
+  ) {
+    return this.fetch<{
+      baseSymbol: string
+      calls: {
+        instrument: PublicInstrument
+        outcome: 'SUCCESS' | 'UNKNOWN'
+        last: string
+        lastTimestamp: string
+        bid: string
+        bidSize: number
+        bidTimestamp: string
+        ask: string
+        askSize: number
+        askTimestamp: string
+        volume: number
+        openInterest: number
+      }[]
+      puts: {
+        instrument: PublicInstrument
+        outcome: 'SUCCESS' | 'UNKNOWN'
+        last: string
+        lastTimestamp: string
+        bid: string
+        bidSize: number
+        bidTimestamp: string
+        ask: string
+        askSize: number
+        askTimestamp: string
+        volume: number
+        openInterest: number
+      }[]
+    }>(`/marketdata/${accountId}/option-chain`, {
       method: 'POST',
       body: JSON.stringify({
         instrument,

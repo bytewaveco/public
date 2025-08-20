@@ -15,15 +15,23 @@ export class MarketDataApi {
    *
    * @returns The quotes for the given instruments.
    */
-  async getQuotes(
-    accountId: string,
-    instruments: PublicInstrument[],
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: { quotes: any[] } | null
-    error: Error | null
-  }> {
-    return this.fetch(`/marketdata/${accountId}/quotes`, {
+  async getQuotes(accountId: string, instruments: PublicInstrument[]) {
+    return this.fetch<{
+      quotes: {
+        instrument: PublicInstrument
+        outcome: 'SUCCESS' | 'UNKNOWN'
+        last: string
+        lastTimestamp: string
+        bid: string
+        bidSize: number
+        bidTimestamp: string
+        ask: string
+        askSize: number
+        askTimestamp: string
+        volume: number
+        openInterest: number
+      }[]
+    }>(`/marketdata/${accountId}/quotes`, {
       method: 'POST',
       body: JSON.stringify({
         instruments,

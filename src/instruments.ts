@@ -10,6 +10,11 @@ export type PublicInstrumentType =
   | 'BOND'
   | 'INDEX'
 
+export type PublicTradingState =
+  | 'BUY_AND_SELL'
+  | 'LIQUIDATION_ONLY'
+  | 'DISABLED'
+
 /**
  * https://public.com/api/docs/resources/instrument-details/get-instrument
  */
@@ -62,11 +67,7 @@ export class InstrumentsApi {
    *
    * @returns The instruments available on Public.
    */
-  async getInstruments(options: PublicGetInstrumentsOptions = {}): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: { instruments: any[] } | null
-    error: Error | null
-  }> {
+  async getInstruments(options: PublicGetInstrumentsOptions = {}) {
     const params = new URLSearchParams()
 
     for (const [key, value] of Object.entries(options)) {
@@ -76,7 +77,15 @@ export class InstrumentsApi {
     }
 
     const stringParams = params.toString()
-    return this.fetch(
+    return this.fetch<{
+      instruments: {
+        instrument: PublicInstrument
+        trading: PublicTradingState
+        fractionalTrading: PublicTradingState
+        optionTrading: PublicTradingState
+        optionSpreadTrading: PublicTradingState
+      }[]
+    }>(
       `/trading/instruments${stringParams.length > 0 ? `?${stringParams}` : ''}`,
     )
   }
@@ -91,14 +100,13 @@ export class InstrumentsApi {
    *
    * @returns The instrument details for the given symbol and type.
    */
-  async getInstrument(
-    symbol: string,
-    type: PublicInstrumentType,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/instruments/${symbol}/${type}`)
+  async getInstrument(symbol: string, type: PublicInstrumentType) {
+    return this.fetch<{
+      instrument: PublicInstrument
+      trading: PublicTradingState
+      fractionalTrading: PublicTradingState
+      optionTrading: PublicTradingState
+      optionSpreadTrading: PublicTradingState
+    }>(`/trading/instruments/${symbol}/${type}`)
   }
 }

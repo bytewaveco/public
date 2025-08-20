@@ -1,4 +1,68 @@
-import type { PublicClientFetch } from '.'
+import type {
+  PublicClientFetch,
+  PublicInstrument,
+  PublicInstrumentType,
+} from '.'
+import {
+  PublicOpenCloseIndicator,
+  PublicOrderSide,
+  PublicOrderStatus,
+  PublicOrderType,
+  PublicTimeInForce,
+} from './orderPlacement'
+
+export type PublicAccountType =
+  | 'BROKERAGE'
+  | 'HIGH_YIELD'
+  | 'BOND_ACCOUNT'
+  | 'RIA_ASSET'
+  | 'TREASURY'
+  | 'TRADITIONAL_IRA'
+  | 'ROTH_IRA'
+
+export type PublicOptionsLevel =
+  | 'NONE'
+  | 'LEVEL_1'
+  | 'LEVEL_2'
+  | 'LEVEL_3'
+  | 'LEVEL_4'
+
+export type PublicBrokerageAccountType = 'CASH' | 'MARGIN'
+
+export type PublicTradePermissions =
+  | 'BUY_AND_SELL'
+  | 'RESTRICTED_SETTLED_FUNDS_ONLY'
+  | 'RESTRICTED_CLOSE_ONLY'
+  | 'RESTRICTED_NO_TRADING'
+
+export type PublicTransactionType =
+  | 'TRADE'
+  | 'MONEY_MOVEMENT'
+  | 'POSITION_ADJUSTMENT'
+
+export type PublicTransactionSubType =
+  | 'DEPOSIT'
+  | 'WITHDRAWAL'
+  | 'DEPOSIT_RETURNED'
+  | 'WITHDRAWAL_RETURNED'
+  | 'DIVIDEND'
+  | 'FEE'
+  | 'REWARD'
+  | 'TREASURY_BILL_TRANSFER'
+  | 'INTEREST'
+  | 'TRADE'
+  | 'TRANSFER'
+  | 'MISC'
+
+export type PublicSecurityType =
+  | 'EQUITY'
+  | 'OPTION'
+  | 'CRYPTO'
+  | 'ALT'
+  | 'TREASURY'
+  | 'BOND'
+
+export type PublicTransactionDirection = 'INCOMING' | 'OUTGOING'
 
 /**
  * https://public.com/api/docs/resources/account-details/get-history
@@ -37,12 +101,16 @@ export class AccountsApi {
    *
    * @returns The list of accounts.
    */
-  async listAccounts(): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: { accounts: any[] } | null
-    error: Error | null
-  }> {
-    return this.fetch('/trading/account')
+  async listAccounts() {
+    return this.fetch<{
+      accounts: {
+        accountId: string
+        accountType: PublicAccountType
+        optionsLevel: PublicOptionsLevel
+        brokerageAccountType: PublicBrokerageAccountType
+        tradePermissions: PublicTradePermissions
+      }[]
+    }>('/trading/account')
   }
 
   /**
@@ -54,12 +122,79 @@ export class AccountsApi {
    *
    * @returns The account details for the given account.
    */
-  async getAccount(accountId: string): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/${accountId}/portfolio/v2`)
+  async getAccount(accountId: string) {
+    return this.fetch<{
+      accountId: string
+      accountType: PublicAccountType
+      buyingPower: {
+        cashOnlyBuyingPower: string
+        buyingPower: string
+        optionsBuyingPower: string
+      }
+      equity: {
+        type: PublicBrokerageAccountType
+        value: string
+        percentageOfPortfolio: string
+      }[]
+      positions: {
+        instrument: {
+          symbol: string
+          name: string
+          type: PublicInstrumentType
+        }
+        quantity: string
+        openedAt: string
+        currentValue: string
+        percentOfPortfolio: string
+        lastPrice: {
+          lastPrice: string
+          timestamp: string
+        }
+        instrumentGain: {
+          gainValue: string
+          gainPercentage: string
+          timestamp: string
+        }
+        positionDailyGain: {
+          gainValue: string
+          gainPercentage: string
+          timestamp: string
+        }
+        costBasis: {
+          totalCost: string
+          unitCost: string
+          gainValue: string
+          gainPercentage: string
+          lastUpdate: string
+        }
+      }[]
+      orders: {
+        orderId: string
+        instrument: PublicInstrument
+        createdAt: string
+        type: PublicOrderType
+        side: PublicOrderSide
+        status: PublicOrderStatus
+        quantity: string
+        notionalValue: string
+        expiration: {
+          timeInForce: PublicTimeInForce
+          expirationTime: string
+        }
+        limitPrice: string
+        stopPrice: string
+        closedAt: string
+        openCloseIndicator: PublicOpenCloseIndicator
+        filledQuantity: string
+        averagePrice: string
+        legs: {
+          instrument: PublicInstrument
+          side: PublicOrderSide
+          openCloseIndicator: PublicOpenCloseIndicator
+          ratioQuantity: number
+        }[]
+      }[]
+    }>(`/trading/${accountId}/portfolio/v2`)
   }
 
   /**
@@ -75,11 +210,7 @@ export class AccountsApi {
   getAccountHistory(
     accountId: string,
     options: PublicGetAccountHistoryOptions = {},
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: { history: any[] } | null
-    error: Error | null
-  }> {
+  ) {
     const params = new URLSearchParams()
 
     for (const [key, value] of Object.entries(options)) {
@@ -90,7 +221,28 @@ export class AccountsApi {
 
     const stringParams = params.toString()
 
-    return this.fetch(
+    return this.fetch<{
+      transactions: {
+        timestamp: string
+        id: string
+        type: PublicTransactionType
+        subType: PublicTransactionSubType
+        accountNumber: string
+        symbol: string
+        securityType: PublicSecurityType
+        side: PublicOrderSide
+        description: string
+        netAmount: string
+        principalAmount: string
+        quantity: string
+        direction: PublicTransactionDirection
+        fees: string
+      }[]
+      nextToken: string
+      start: string
+      end: string
+      pageSize: number
+    }>(
       `/trading/${accountId}/history${
         stringParams.length > 0 ? `?${stringParams}` : ''
       }`,

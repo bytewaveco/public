@@ -1,4 +1,8 @@
-import type { PublicClientFetch, PublicInstrument } from '.'
+import type {
+  PublicClientFetch,
+  PublicInstrument,
+  PublicInstrumentType,
+} from '.'
 import { v4 } from 'uuid'
 
 export type PublicOrderSide = 'BUY' | 'SELL'
@@ -8,6 +12,18 @@ export type PublicOrderType = 'MARKET' | 'LIMIT' | 'STOP' | 'STOP_LIMIT'
 export type PublicOpenCloseIndicator = 'OPEN' | 'CLOSE'
 
 export type PublicTimeInForce = 'DAY' | 'GTD'
+
+export type PublicOrderStatus =
+  | 'NEW'
+  | 'PARTIALLY_FILLED'
+  | 'CANCELLED'
+  | 'QUEUED_CANCELLED'
+  | 'FILLED'
+  | 'REJECTED'
+  | 'PENDING_REPLACE'
+  | 'PENDING_CANCEL'
+  | 'EXPIRED'
+  | 'REPLACED'
 
 /**
  * https://public.com/api/docs/resources/order-placement/preflight-single-leg
@@ -245,15 +261,10 @@ export class OrderPlacementApi {
    *
    * @returns The order details for the given order.
    */
-  async placeOrder(
-    accountId: string,
-    options: PublicPlaceOrderOptions,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/${accountId}/order`, {
+  async placeOrder(accountId: string, options: PublicPlaceOrderOptions) {
+    return this.fetch<{
+      orderId: string
+    }>(`/trading/${accountId}/order`, {
       method: 'POST',
       body: JSON.stringify(options),
     })
@@ -272,12 +283,10 @@ export class OrderPlacementApi {
   async placeOrderMultiLeg(
     accountId: string,
     options: PublicPlaceOrderMultiLegOptions,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/${accountId}/order/multileg`, {
+  ) {
+    return this.fetch<{
+      orderId: string
+    }>(`/trading/${accountId}/order/multileg`, {
       method: 'POST',
       body: JSON.stringify(options),
     })
@@ -296,12 +305,55 @@ export class OrderPlacementApi {
   async preflightSingleLeg(
     accountId: string,
     options: PublicPreflightSingleLegOptions,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/${accountId}/preflight/single-leg`, {
+  ) {
+    return this.fetch<{
+      instrument: {
+        symbol: string
+        type: PublicInstrumentType
+      }
+      cusip: string
+      rootSymbol: string
+      rootOptionSymbol: string
+      estimatedCommission: string
+      regulatoryFees: {
+        secFee: string
+        tafFee: string
+        orfFee: string
+        exchangeFee: string
+        occFee: string
+        catFee: string
+      }
+      estimatedIndexOptionFee: string
+      orderValue: string
+      estimatedQuantity: string
+      estimatedCost: string
+      buyingPowerRequirement: string
+      estimatedProceeds: string
+      optionDetails: {
+        baseSymbol: string
+        type: 'CALL' | 'PUT'
+        strikePrice: string
+        optionExpireDate: string
+      }
+      estimatedOrderRebate: {
+        estimatedOptionRebate: string
+        optionRebatePercent: number
+        perContractRebate: string
+      }
+      marginRequirement: {
+        longMaintenanceRequirement: string
+        longInitialRequirement: string
+      }
+      marginImpact: {
+        marginUsageImpact: string
+        initialMarginRequirement: string
+      }
+      priceIncrement: {
+        incrementBelow3: string
+        incrementAbove3: string
+        currentIncrement: string
+      }
+    }>(`/trading/${accountId}/preflight/single-leg`, {
       method: 'POST',
       body: JSON.stringify(options),
     })
@@ -320,12 +372,51 @@ export class OrderPlacementApi {
   async preflightMultiLeg(
     accountId: string,
     options: PublicPreflightMultiLegOptions,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/${accountId}/preflight/multi-leg`, {
+  ) {
+    return this.fetch<{
+      baseSymbol: string
+      strategyName: string
+      legs: {
+        instrument: PublicInstrument
+        side: PublicOrderSide
+        openCloseIndicator: PublicOpenCloseIndicator
+        ratioQuantity: number
+        optionDetails: {
+          baseSymbol: string
+          type: 'CALL' | 'PUT'
+          strikePrice: string
+          optionExpireDate: string
+        }
+      }[]
+      estimatedCommission: string
+      regulatoryFees: {
+        secFee: string
+        tafFee: string
+        orfFee: string
+        exchangeFee: string
+        occFee: string
+        catFee: string
+      }
+      estimatedIndexOptionFee: string
+      orderValue: string
+      estimatedQuantity: string
+      estimatedCost: string
+      buyingPowerRequirement: string
+      estimatedProceeds: string
+      marginRequirement: {
+        longMaintenanceRequirement: string
+        longInitialRequirement: string
+      }
+      marginImpact: {
+        marginUsageImpact: string
+        initialMarginRequirement: string
+      }
+      priceIncrement: {
+        incrementBelow3: string
+        incrementAbove3: string
+        currentIncrement: string
+      }
+    }>(`/trading/${accountId}/preflight/multi-leg`, {
       method: 'POST',
       body: JSON.stringify(options),
     })
@@ -341,15 +432,33 @@ export class OrderPlacementApi {
    *
    * @returns The order details for the given order.
    */
-  async getOrder(
-    accountId: string,
-    orderId: string,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/${accountId}/order/${orderId}`)
+  async getOrder(accountId: string, orderId: string) {
+    return this.fetch<{
+      orderId: string
+      instrument: PublicInstrument
+      createdAt: string
+      type: PublicOrderType
+      side: PublicOrderSide
+      status: PublicOrderStatus
+      quantity: string
+      notionalValue: string
+      expiration: {
+        timeInForce: PublicTimeInForce
+        expirationTime: string
+      }
+      limitPrice: string
+      stopPrice: string
+      closedAt: string
+      openCloseIndicator: PublicOpenCloseIndicator
+      filledQuantity: string
+      averagePrice: string
+      legs: {
+        instrument: PublicInstrument
+        side: PublicOrderSide
+        openCloseIndicator: PublicOpenCloseIndicator
+        ratioQuantity: number
+      }[]
+    }>(`/trading/${accountId}/order/${orderId}`)
   }
 
   /**
@@ -360,15 +469,8 @@ export class OrderPlacementApi {
    * @param accountId - The ID of the account to cancel the order for.
    * @param orderId - The ID of the order to cancel.
    */
-  async cancelOrder(
-    accountId: string,
-    orderId: string,
-  ): Promise<{
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    data: any | null
-    error: Error | null
-  }> {
-    return this.fetch(`/trading/${accountId}/order/${orderId}`, {
+  async cancelOrder(accountId: string, orderId: string) {
+    return this.fetch<undefined>(`/trading/${accountId}/order/${orderId}`, {
       method: 'DELETE',
     })
   }
