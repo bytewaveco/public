@@ -3,7 +3,7 @@ import type {
   PublicInstrument,
   PublicInstrumentType,
 } from '.'
-import {
+import type {
   PublicOpenCloseIndicator,
   PublicOrderSide,
   PublicOrderStatus,

@@ -24,10 +24,16 @@ export type PublicClientFetch = <T = unknown>(
   url: string,
   /* eslint-disable-next-line no-unused-vars */
   options?: RequestInit,
-) => Promise<{
-  data: T | null
-  error: Error | null
-}>
+) => Promise<
+  | {
+      data: T
+      error: null
+    }
+  | {
+      data: null
+      error: Error
+    }
+>
 
 export type PublicClientOptions = object
 
@@ -57,7 +63,10 @@ async function getSession(
       },
     )
 
-    const data = await response.json()
+    const data = (await response.json()) as {
+      message: string
+      accessToken: string
+    }
 
     if (!response.ok) {
       throw new Error(data.message)
@@ -93,9 +102,17 @@ export function createClient(
   ) => {
     const session = await getSession(secret)
     const result = {
-      data: null as T | null,
-      error: null as Error | null,
-    }
+      data: null,
+      error: null,
+    } as
+      | {
+          data: T
+          error: null
+        }
+      | {
+          data: null
+          error: Error
+        }
 
     if (!session) {
       result.error = new Error('Session not found')
@@ -119,7 +136,7 @@ export function createClient(
         result.error = new Error(JSON.stringify(data))
       }
     } catch (error) {
-      result.error = error
+      result.error = error as Error
     }
 
     return result
